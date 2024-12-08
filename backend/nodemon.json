@@ -1,0 +1,5 @@
+{
+    "watch":["scr"],
+    "ignore":["dist/*"],
+    "exec":"ts-node src/index.ts"
+}
