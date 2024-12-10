@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/feature/auth/cubit/auth_cubit.dart';
-import 'package:frontend/main.dart';
+import 'package:frontend/feature/home/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,8 +39,10 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(state.error)));
           } else if (state is AuthLoading) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text("Logged innn!!!")));
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+              (_) => false,
+            );
           }
         },
         builder: (context, state) {
