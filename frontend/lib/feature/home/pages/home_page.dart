@@ -4,6 +4,7 @@ import 'package:frontend/core/constants/utils.dart';
 import 'package:frontend/feature/home/widgets/task_card.dart';
 
 import '../widgets/date_selector.dart';
+import 'add_new_task.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -15,7 +16,11 @@ class HomePage extends StatelessWidget {
         title: const Text("Task App"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const AddNewTask(),
+              ));
+            },
             icon: const Icon(
               CupertinoIcons.add,
             ),
