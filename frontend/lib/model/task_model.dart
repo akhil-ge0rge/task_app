@@ -1,12 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:frontend/core/constants/utils.dart';
+
 class TaskModel {
   final String id;
   final String uid;
   final String title;
   final String description;
-  final String hexCode;
+  final Color color;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime dueAt;
@@ -15,7 +18,7 @@ class TaskModel {
     required this.uid,
     required this.title,
     required this.description,
-    required this.hexCode,
+    required this.color,
     required this.createdAt,
     required this.updatedAt,
     required this.dueAt,
@@ -26,7 +29,7 @@ class TaskModel {
     String? uid,
     String? title,
     String? description,
-    String? hexCode,
+    Color? color,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? dueAt,
@@ -36,7 +39,7 @@ class TaskModel {
       uid: uid ?? this.uid,
       title: title ?? this.title,
       description: description ?? this.description,
-      hexCode: hexCode ?? this.hexCode,
+      color: color ?? this.color,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       dueAt: dueAt ?? this.dueAt,
@@ -49,7 +52,7 @@ class TaskModel {
       'uid': uid,
       'title': title,
       'description': description,
-      'hexCode': hexCode,
+      'hexCode': rgbToHex(color),
       'createdAt': createdAt.millisecondsSinceEpoch,
       'updatedAt': updatedAt.millisecondsSinceEpoch,
       'dueAt': dueAt.millisecondsSinceEpoch,
@@ -62,7 +65,7 @@ class TaskModel {
       uid: map['uid'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      hexCode: map['hexCode'] ?? '',
+      color: hexToRgb(map['hexColor']),
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
       dueAt: DateTime.parse(map['dueAt']),
@@ -76,7 +79,7 @@ class TaskModel {
 
   @override
   String toString() {
-    return 'TaskModel(id: $id, uid: $uid, title: $title, description: $description, hexCode: $hexCode, createdAt: $createdAt, updatedAt: $updatedAt, dueAt: $dueAt)';
+    return 'TaskModel(id: $id, uid: $uid, title: $title, description: $description, color: $color, createdAt: $createdAt, updatedAt: $updatedAt, dueAt: $dueAt)';
   }
 
   @override
@@ -87,7 +90,7 @@ class TaskModel {
         other.uid == uid &&
         other.title == title &&
         other.description == description &&
-        other.hexCode == hexCode &&
+        other.color == color &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt &&
         other.dueAt == dueAt;
@@ -99,7 +102,7 @@ class TaskModel {
         uid.hashCode ^
         title.hashCode ^
         description.hashCode ^
-        hexCode.hashCode ^
+        color.hashCode ^
         createdAt.hashCode ^
         updatedAt.hashCode ^
         dueAt.hashCode;

@@ -4,7 +4,7 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/feature/auth/cubit/auth_cubit.dart';
-import 'package:frontend/feature/home/cubit/add_new_task_cubit.dart';
+import 'package:frontend/feature/home/cubit/task_cubit.dart';
 import 'package:intl/intl.dart';
 
 class AddNewTask extends StatefulWidget {
@@ -24,7 +24,7 @@ class _AddNewTaskState extends State<AddNewTask> {
   void createTask() async {
     if (formKey.currentState!.validate()) {
       AuthLoggedIn user = context.read<AuthCubit>().state as AuthLoggedIn;
-      await context.read<AddNewTaskCubit>().createNewTask(
+      await context.read<TaskCubit>().createNewTask(
           title: titleController.text.trim(),
           description: descriptionController.text.trim(),
           color: selectedColor,
@@ -68,9 +68,9 @@ class _AddNewTaskState extends State<AddNewTask> {
           ),
         ],
       ),
-      body: BlocConsumer<AddNewTaskCubit, AddNewTaskState>(
+      body: BlocConsumer<TaskCubit, TaskState>(
         listener: (context, state) {
-          if (state is AddNewTaskError) {
+          if (state is TaskError) {
             log(state.error);
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(state.error)));
@@ -81,7 +81,7 @@ class _AddNewTaskState extends State<AddNewTask> {
           }
         },
         builder: (context, state) {
-          if (state is AddNewTaskLoading) {
+          if (state is TaskLoading) {
             return const Center(
               child: CircularProgressIndicator.adaptive(),
             );

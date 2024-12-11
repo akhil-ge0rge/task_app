@@ -4,10 +4,10 @@ import 'package:frontend/core/constants/utils.dart';
 import 'package:frontend/feature/home/repository/task_remote_repository.dart';
 
 import '../../../model/task_model.dart';
-part 'add_new_task_state.dart';
+part 'task_state.dart';
 
-class AddNewTaskCubit extends Cubit<AddNewTaskState> {
-  AddNewTaskCubit() : super(AddNewTaskinitial());
+class TaskCubit extends Cubit<TaskState> {
+  TaskCubit() : super(Taskinitial());
   final taskRemoteRepository = TaskRemoteRepository();
 
   Future<void> createNewTask({
@@ -18,7 +18,7 @@ class AddNewTaskCubit extends Cubit<AddNewTaskState> {
     required DateTime dueAt,
   }) async {
     try {
-      emit(AddNewTaskLoading());
+      emit(TaskLoading());
       final task = await taskRemoteRepository.createTask(
           title: title,
           description: description,
@@ -27,7 +27,19 @@ class AddNewTaskCubit extends Cubit<AddNewTaskState> {
           dueAt: dueAt);
       emit(AddNewTaskSucess(task));
     } catch (e) {
-      emit(AddNewTaskError(e.toString()));
+      emit(TaskError(e.toString()));
+    }
+  }
+
+  Future<void> getAllTasks({
+    required String token,
+  }) async {
+    try {
+      emit(TaskLoading());
+      final task = await taskRemoteRepository.getTasks(token: token);
+      emit(GetTasksSucess(task));
+    } catch (e) {
+      emit(TaskError(e.toString()));
     }
   }
 }
