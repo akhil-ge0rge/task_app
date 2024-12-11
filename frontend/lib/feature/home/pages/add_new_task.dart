@@ -1,5 +1,10 @@
+import 'dart:developer';
+
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/feature/auth/cubit/auth_cubit.dart';
+import 'package:frontend/feature/home/cubit/add_new_task_cubit.dart';
 import 'package:intl/intl.dart';
 
 class AddNewTask extends StatefulWidget {
@@ -14,6 +19,27 @@ class _AddNewTaskState extends State<AddNewTask> {
   TextEditingController descriptionController = TextEditingController();
   DateTime selectedDate = DateTime.now();
   Color selectedColor = const Color.fromRGBO(246, 222, 194, 1);
+  final formKey = GlobalKey<FormState>();
+
+  void createTask() async {
+    if (formKey.currentState!.validate()) {
+      AuthLoggedIn user = context.read<AuthCubit>().state as AuthLoggedIn;
+      await context.read<AddNewTaskCubit>().createNewTask(
+          title: titleController.text.trim(),
+          description: descriptionController.text.trim(),
+          color: selectedColor,
+          token: user.userModel.token,
+          dueAt: selectedDate);
+    }
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,51 +68,86 @@ class _AddNewTaskState extends State<AddNewTask> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: titleController,
-              decoration: const InputDecoration(hintText: "Title"),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: descriptionController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: "Description",
+      body: BlocConsumer<AddNewTaskCubit, AddNewTaskState>(
+        listener: (context, state) {
+          if (state is AddNewTaskError) {
+            log(state.error);
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.error)));
+          } else if (state is AddNewTaskSucess) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text("Task Added")));
+            Navigator.of(context).pop();
+          }
+        },
+        builder: (context, state) {
+          if (state is AddNewTaskLoading) {
+            return const Center(
+              child: CircularProgressIndicator.adaptive(),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: titleController,
+                    decoration: const InputDecoration(hintText: "Title"),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Title cannot be empty";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: descriptionController,
+                    maxLines: 4,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Description cannot be empty";
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "Description",
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ColorPicker(
+                      heading: const Text("Select Color"),
+                      subheading: const Text("Select a Diffrent Shade"),
+                      pickersEnabled: const {
+                        ColorPickerType.wheel: true,
+                      },
+                      color: selectedColor,
+                      onColorChanged: (Color color) {
+                        setState(() {
+                          selectedColor = color;
+                        });
+                      }),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                    onPressed: createTask,
+                    child: const Text(
+                      "Submit",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            ColorPicker(
-                heading: const Text("Select Color"),
-                subheading: const Text("Select a Diffrent Shade"),
-                pickersEnabled: const {
-                  ColorPickerType.wheel: true,
-                },
-                color: selectedColor,
-                onColorChanged: (Color color) {
-                  setState(() {
-                    selectedColor = color;
-                  });
-                }),
-            const SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text(
-                "Submit",
-                style: TextStyle(color: Colors.white),
-              ),
-            )
-          ],
-        ),
+          );
+        },
       ),
     );
   }

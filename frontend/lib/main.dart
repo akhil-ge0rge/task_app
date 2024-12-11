@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/feature/auth/cubit/auth_cubit.dart';
 import 'package:frontend/feature/auth/pages/sign_up_page.dart';
+import 'package:frontend/feature/home/cubit/add_new_task_cubit.dart';
 import 'feature/home/pages/home_page.dart';
 
 void main() {
@@ -9,6 +10,7 @@ void main() {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => AuthCubit()),
+        BlocProvider(create: (_) => AddNewTaskCubit()),
       ],
       child: const MyApp(),
     ),

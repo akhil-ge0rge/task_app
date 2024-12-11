@@ -13,3 +13,11 @@ List<DateTime> generateWeekDates(int weekOffset) {
   startOfWeek = startOfWeek.add(Duration(days: weekOffset * 7));
   return List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
 }
+
+String rgbToHex(Color color) {
+  return '${color.red.toRadixString(16).padLeft(2, '0')}${color.green.toRadixString(16).padLeft(2, '0')}${color.blue.toRadixString(16).padLeft(2, '0')}';
+}
+
+Color hexToRgb(String hexCode) {
+  return Color(int.parse(hexCode, radix: 16) + 0xFF000000);
+}
