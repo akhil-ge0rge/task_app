@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/feature/auth/cubit/auth_cubit.dart';
 import 'package:frontend/feature/home/cubit/task_cubit.dart';
+import 'package:frontend/feature/home/pages/home_page.dart';
 import 'package:intl/intl.dart';
 
 class AddNewTask extends StatefulWidget {
@@ -77,7 +78,12 @@ class _AddNewTaskState extends State<AddNewTask> {
           } else if (state is AddNewTaskSucess) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text("Task Added")));
-            Navigator.of(context).pop();
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+              (route) => false,
+            );
           }
         },
         builder: (context, state) {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  DateTime selectedDate = DateTime.now();
   @override
   void initState() {
     super.initState();
@@ -56,15 +59,32 @@ class _HomePageState extends State<HomePage> {
             );
           }
           if (state is GetTasksSucess) {
-            final tasks = state.tasks;
+            final tasks = state.tasks
+                .where(
+                  (element) =>
+                      DateFormat('d').format(element.dueAt) ==
+                          DateFormat('d').format(selectedDate) &&
+                      selectedDate.month == element.dueAt.month &&
+                      selectedDate.year == element.dueAt.year,
+                )
+                .toList();
+
             return Column(
               children: [
-                const DateSelector(),
+                DateSelector(
+                  selectedDate: selectedDate,
+                  onTap: (date) {
+                    setState(() {
+                      selectedDate = date;
+                    });
+                  },
+                ),
                 Expanded(
                   child: ListView.builder(
                       itemCount: tasks.length,
                       itemBuilder: (context, index) {
                         final task = tasks.elementAt(index);
+                        log(task.toString());
                         return Row(
                           children: [
                             Expanded(
