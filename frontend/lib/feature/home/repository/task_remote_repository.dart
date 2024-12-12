@@ -5,7 +5,10 @@ import 'package:frontend/core/constants/constants.dart';
 import 'package:frontend/model/task_model.dart';
 import 'package:http/http.dart' as http;
 
+import 'task_local_repository.dart';
+
 class TaskRemoteRepository {
+  final taskLocalRepository = TaskLocalRepository();
   Future<TaskModel> createTask(
       {required String title,
       required String description,
@@ -62,10 +65,14 @@ class TaskRemoteRepository {
         taskList.add(TaskModel.fromMap(element));
       }
 
+      await taskLocalRepository.insertTasks(taskList);
+
       return taskList;
     } catch (e) {
-      log("errr");
-      log(e.toString());
+      final tasks = await taskLocalRepository.getTasks();
+      if (tasks.isEmpty) {
+        return tasks;
+      }
       rethrow;
     }
   }
