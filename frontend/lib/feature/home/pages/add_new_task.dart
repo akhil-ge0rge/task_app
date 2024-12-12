@@ -30,6 +30,7 @@ class _AddNewTaskState extends State<AddNewTask> {
           description: descriptionController.text.trim(),
           color: selectedColor,
           token: user.userModel.token,
+          uid: user.userModel.id,
           dueAt: selectedDate);
     }
   }

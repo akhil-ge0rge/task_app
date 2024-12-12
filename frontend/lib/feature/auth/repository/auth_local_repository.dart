@@ -27,8 +27,8 @@ CREATE TABLE $tableName(
         email TEXT NOT NULL,
         token TEXT NOT NULL,
         name TEXT NOT NULL,
-        createdAt int NOT NULL,
-        updatedAt int NOT NULL
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
 )
 ''');
       },

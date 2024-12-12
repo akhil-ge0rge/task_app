@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:frontend/core/constants/constants.dart';
+import 'package:frontend/core/constants/utils.dart';
 import 'package:frontend/model/task_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 import 'task_local_repository.dart';
 
@@ -14,6 +16,7 @@ class TaskRemoteRepository {
       required String description,
       required String hexColor,
       required String token,
+      required String uid,
       required DateTime dueAt}) async {
     final body = jsonEncode({
       "title": title,
@@ -21,7 +24,6 @@ class TaskRemoteRepository {
       "hexColor": hexColor,
       "dueAt": dueAt.toIso8601String()
     });
-    log(body);
     try {
       final res = await http.post(
         Uri.parse("${Constants.backendUri}/task"),
@@ -31,13 +33,32 @@ class TaskRemoteRepository {
         },
         body: body,
       );
-      log(res.body);
       if (res.statusCode != 201) {
         throw jsonDecode(res.body)['msg'];
       }
       return TaskModel.fromJson(res.body);
     } catch (e) {
-      log(e.toString());
+      log("ERR ON 1st catch");
+      try {
+        final task = TaskModel(
+          id: const Uuid().v4(),
+          uid: uid,
+          title: title,
+          description: description,
+          color: hexToRgb(hexColor),
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          dueAt: dueAt,
+          isSynced: 0,
+        );
+        await taskLocalRepository.insertTask(task);
+        return task;
+      } catch (e) {
+        log("ERR ON 2nd catch");
+        log(e.toString());
+        rethrow;
+      }
+
       rethrow;
     }
   }
@@ -70,7 +91,7 @@ class TaskRemoteRepository {
       return taskList;
     } catch (e) {
       final tasks = await taskLocalRepository.getTasks();
-      if (tasks.isEmpty) {
+      if (tasks.isNotEmpty) {
         return tasks;
       }
       rethrow;

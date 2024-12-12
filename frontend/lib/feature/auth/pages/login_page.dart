@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
           if (state is AuthError) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(state.error)));
-          } else if (state is AuthLoading) {
+          } else if (state is AuthLoggedIn) {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const HomePage()),
               (_) => false,

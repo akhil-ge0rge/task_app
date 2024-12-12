@@ -26,11 +26,11 @@ CREATE TABLE $tableName(
         uid TEXT NOT NULL,
         title TEXT NOT NULL,
         description TEXT NOT NULL,
-        color TEXT NOT NULL,
-        name TEXT NOT NULL,
-        dueAt int NOT NULL,
-        createdAt int NOT NULL,
-        updatedAt int NOT NULL
+        hexColor TEXT NOT NULL,
+        dueAt TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        isSynced INTEGER NOT NULL
 )
 ''');
       },
@@ -39,7 +39,7 @@ CREATE TABLE $tableName(
 
   Future<void> insertTask(TaskModel task) async {
     final db = await database;
-
+    await db.delete(tableName, where: 'id = ?', whereArgs: [task.id]);
     db.insert(
       tableName,
       task.toMap(),
