@@ -41,4 +41,29 @@ taskRouter.delete("/", auth, async (req: AuthRequest, res) => {
     res.status(500).json({ msg: e });
   }
 });
+
+//sync Task
+taskRouter.post("/sync", auth, async (req: AuthRequest, res) => {
+  try {
+    const taskList = req.body;
+    console.log(taskList);
+    const filterdTask: NewTask[] = [];
+
+    for (let t of taskList) {
+      t = {
+        ...t,
+        dueAt: new Date(t.dueAt),
+        createdAt: new Date(t.createdAt),
+        updatedAt: new Date(t.updatedAt),
+        uid: req.user,
+      };
+      filterdTask.push(t);
+    }
+
+    const pushedTask = await db.insert(tasks).values(filterdTask).returning();
+    res.status(201).json(pushedTask);
+  } catch (e) {
+    res.status(500).json({ msg: e });
+  }
+});
 export default taskRouter;

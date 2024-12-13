@@ -73,4 +73,24 @@ CREATE TABLE $tableName(
     }
     return [];
   }
+
+  Future<List<TaskModel>> getUnsyncedTasks() async {
+    final db = await database;
+    final result =
+        await db.query(tableName, where: 'isSynced = ?', whereArgs: [0]);
+    if (result.isNotEmpty) {
+      List<TaskModel> tasks = [];
+      for (final elemet in result) {
+        tasks.add(TaskModel.fromMap(elemet));
+      }
+      return tasks;
+    }
+    return [];
+  }
+
+  Future<void> updateRowValue(String id, int newValue) async {
+    final db = await database;
+    await db.update(tableName, {"isSynced": newValue},
+        where: 'id = ?', whereArgs: [id]);
+  }
 }

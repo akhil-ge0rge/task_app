@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/core/constants/utils.dart';
@@ -45,6 +47,28 @@ class TaskCubit extends Cubit<TaskState> {
       emit(GetTasksSucess(task));
     } catch (e) {
       emit(TaskError(e.toString()));
+    }
+  }
+
+  Future<void> syncTasks({required String token}) async {
+    final unSyncedTasks = await taskLocalRepository.getUnsyncedTasks();
+
+    log("UUNSUCED TASK===>>>> $unSyncedTasks");
+
+    if (unSyncedTasks.isEmpty) {
+      log(" No Task fot Syncinngg..........");
+      return;
+    }
+    log("Syncinngg..........");
+    final isSynced = await taskRemoteRepository.syncTasks(
+        tasks: unSyncedTasks, token: token);
+
+    if (isSynced) {
+      for (final task in unSyncedTasks) {
+        taskLocalRepository.updateRowValue(task.id, 1);
+      }
+
+      log("Sync Completed");
     }
   }
 }
